@@ -1,0 +1,4 @@
+developer: Quantum
+envs:
+packages: ['cryptography']
+depends: []
