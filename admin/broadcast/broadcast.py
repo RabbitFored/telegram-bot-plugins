@@ -18,7 +18,7 @@ from bot.core import filters as fltr
 async def bcast(mode, msg, process):
     process.data["x"] = 0
     process.data["failed"] = 0
-    
+
     users = await db.fetch_all_users()
     process.data["total"] = len(users)
     for user in users:
@@ -47,19 +47,19 @@ async def bcast(mode, msg, process):
         except Exception as e:
             process.data["failed"]+= 1 
             logger.info(f"Error: {e}")
-        
+
 @Client.on_message(filters.command(["broadcast"]) & fltr.group("admin"))
 async def broadcast(client, message):
         processes = ProcessManager.list_processes()
-       
+
         for p in processes:
 
             if p.name == 'broadcast':
                 await message.reply_text("Another broadcast is already in progress. Please try again later.")
                 return
-        
+
         broadcast_msg = message.reply_to_message
-    
+
         if not broadcast_msg:
             await message.reply(
                 "Please reply to a message to broadcast it.", quote=True
@@ -70,7 +70,7 @@ async def broadcast(client, message):
         mode = CONFIG.settings["broadcast"]["mode"]
         if len(message.text.split(" ")) > 1:
             mode = message.text.split(" ")[1]
-            
+
         process = ProcessManager.create_process("broadcast")
         print(process.process_id)
         keyboard = [
@@ -81,4 +81,4 @@ async def broadcast(client, message):
         await message.reply_text("Broadcasting...",                                                    reply_markup=InlineKeyboardMarkup(keyboard))
 
         await process.start( bcast( mode, broadcast_msg, process ) )  
-    
+
