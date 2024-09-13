@@ -1,15 +1,10 @@
-'''
+import os
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
+import base64
+from quart import send_file
 
-from pyrogram import Client, filters
-import urllib.parse
-from bot.core import database as db
-from bot.core import filters as fltr
-from bot.core.utils import generate_keyboard
-
-
-baseURL = os.environ['baseURL']
-
-
+from bot import web
 
 
 SECRET_KEY = os.environ.get("key", "7F30F2253DEC8C1E88D3C0C91416AE1B").encode('utf-8')
@@ -36,9 +31,3 @@ def decrypt_path(encrypted_token):
 async def download(token):
     path = decrypt_path(token)
     return await send_file(path, as_attachment=True)
-
-'''
-
-
-
-

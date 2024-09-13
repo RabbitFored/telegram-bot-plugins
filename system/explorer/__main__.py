@@ -1,11 +1,17 @@
+import base64
 import os
 import time
+import urllib.parse
 
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from pyrogram import Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from bot.core import filters as fltr
 from bot.core.utils import generate_keyboard, progress_func
+
+from ..stream import encrypt_path
 
 
 async def list_dir(_, m, path):
@@ -107,7 +113,28 @@ async def back(client, query):
   path = os.path.dirname(query.message.text)
   await list_dir(client, query.message, path)
 
-'''
+
+SECRET_KEY = os.environ.get("key", "7F30F2253DEC8C1E88D3C0C91416AE1B").encode('utf-8')
+
+def encrypt_path(file_path):
+  iv = os.urandom(16)
+  cipher = Cipher(algorithms.AES(SECRET_KEY), modes.CFB(iv), backend=default_backend())
+  encryptor = cipher.encryptor()
+  encrypted_path = iv + encryptor.update(file_path.encode()) + encryptor.finalize()
+  return base64.urlsafe_b64encode(encrypted_path).rstrip(b'=').decode()
+
+def decrypt_path(encrypted_token):
+  missing_padding = len(encrypted_token) % 4
+  if missing_padding:
+      encrypted_token += '=' * (4 - missing_padding)
+  encrypted_path = base64.urlsafe_b64decode(encrypted_token.encode())
+  iv = encrypted_path[:16]
+  cipher = Cipher(algorithms.AES(SECRET_KEY), modes.CFB(iv), backend=default_backend())
+  decryptor = cipher.decryptor()
+  decrypted_path = decryptor.update(encrypted_path[16:]) + decryptor.finalize()
+  return decrypted_path.decode()
+
+
 @Client.on_callback_query(fltr.on_data("stream"))
 async def stream(client, query):
   baseURL = os.environ['baseURL']
@@ -122,4 +149,5 @@ async def stream(client, query):
   secret_token = encrypt_path(path)
   url = urllib.parse.urljoin(baseURL, "/download/" + secret_token)
   await query.message.reply(url,reply_markup=generate_keyboard(f"[OPEN](url::{url})"))
-'''
+
+
