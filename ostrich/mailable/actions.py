@@ -51,7 +51,7 @@ async def generate(client, message):
         )
         return
 
-    domains = os.environ('domains')
+    domains = os.environ('domains').split(",")
 
     if user.subscription["name"] == "premium":
         user_domains = user.data.get("domains", [])
@@ -107,12 +107,12 @@ async def set_mail(client, message):
         await message.reply_text(text="**Provide a valid mail ID.**")
         return
 
-    domains = os.environ('domains')
+    domains = os.environ('domains').split(",")
     if user.subscription["name"] == "premium":
         user_domains = user.data.get("domains", [])
         domains = domains + user_domains
 
-    reserved_keyword = os.environ('reserved_keyword')
+    reserved_keyword = os.environ('reserved_keyword').split(",")
 
     id, domain = mailID.split("@")
 
@@ -142,7 +142,7 @@ async def set_mail(client, message):
 
 async def transfer_mail(client, message, mail):
     id, domain = mail.split("@")
-    domains = os.environ('domains')
+    domains = os.environ('domains').split(",")
     if domain not in domains:
         await message.chat.ask("**Cannot transfer this mail**")
         return
