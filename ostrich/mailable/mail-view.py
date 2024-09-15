@@ -10,8 +10,8 @@ from bot.core.utils import strip_script_tags
 
 @web.route("/inbox/<user>/<id>")
 async def inbox(user, id):
-    media = await bot.get_messages(int(user), int(id))
     try:
+        media = await bot.get_messages(int(user), int(id))
         with tempfile.TemporaryDirectory(prefix=f"{int(user)}_") as temp_dir:
             temp_file_path = os.path.join(temp_dir, "mail")
             await media.download(temp_file_path)

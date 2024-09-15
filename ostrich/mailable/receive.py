@@ -73,8 +73,10 @@ async def secretmessages():
                 )
             except UserIsBlocked:
                 user.setStatus("inactive")
+                return "blocked user"
             except InputUserDeactivated:
                 await db.delete_user(user.ID)
+                return "deactivated user"
 
         await db.inc_stat("recieved", 1)
         return Response(status=200)
