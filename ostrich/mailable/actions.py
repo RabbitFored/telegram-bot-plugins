@@ -1,8 +1,8 @@
 from pyrogram import Client, filters
 from pyrogram.enums import ListenerTypes, MessageEntityType
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
-from bot import CONFIG, strings
+import os
+from bot import strings
 from bot.core import database as db
 from bot.core import utils
 from bot.core.utils import gen_rand_string, generate_keyboard
@@ -51,7 +51,7 @@ async def generate(client, message):
         )
         return
 
-    domains = CONFIG.settings["extras"]["domains"]
+    domains = os.environ('domains')
 
     if user.subscription["name"] == "premium":
         user_domains = user.data.get("domains", [])
@@ -107,12 +107,12 @@ async def set_mail(client, message):
         await message.reply_text(text="**Provide a valid mail ID.**")
         return
 
-    domains = CONFIG.settings["extras"]["domains"]
+    domains = os.environ('domains')
     if user.subscription["name"] == "premium":
         user_domains = user.data.get("domains", [])
         domains = domains + user_domains
 
-    reserved_keyword = CONFIG.settings["extras"]["reserved_keyword"]
+    reserved_keyword = os.environ('reserved_keyword')
 
     id, domain = mailID.split("@")
 
@@ -142,7 +142,7 @@ async def set_mail(client, message):
 
 async def transfer_mail(client, message, mail):
     id, domain = mail.split("@")
-    domains = CONFIG.settings["extras"]["domains"]
+    domains = os.environ('domains')
     if domain not in domains:
         await message.chat.ask("**Cannot transfer this mail**")
         return
