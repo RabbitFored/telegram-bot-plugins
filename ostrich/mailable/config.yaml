@@ -1,4 +1,0 @@
-developer: Quantum
-envs:
-packages: ['mail-parser==3.15.0']
-depends: []

@@ -1,4 +1,0 @@
-developer: Quantum
-envs:
-packages: ['pillow==10.4.0']
-depends: []

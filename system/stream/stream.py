@@ -28,6 +28,6 @@ def decrypt_path(encrypted_token):
   return decrypted_path.decode()
 
 @web.route('/download/<token>')
-async def download(token):
+async def download_d(token):
     path = decrypt_path(token)
     return await send_file(path, as_attachment=True)
