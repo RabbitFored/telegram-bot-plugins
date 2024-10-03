@@ -36,16 +36,20 @@ message_count = os.environ.get("ANTIFLOOD_MESSAGE_COUNT", 5)
 
 antiflood = AntiFlood(message_count, message_interval)
 
+
 @Client.on_message(filters.private , group=-10)
 async def check_antiflood(client, message):
-    userID = message.from_user.id
-    if antiflood.is_flooding(userID):
+    if not os.environ.get("DISABLE_ANTIFLOOD", False):
+      userID = message.from_user.id
+      if antiflood.is_flooding(userID):
         user = await db.get_user(userID)
         await user.warn()
         antiflood.flush_user(userID)
         await message.reply(
                "You are flooding me, slow down!\n\nFlooding may cause your account to be banned.")
         message.stop_propagation()
+      else:
+        message.continue_propagation()
     else:
         message.continue_propagation()
 
