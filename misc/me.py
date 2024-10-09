@@ -13,6 +13,7 @@ async def me(client, message):
 **Username:** @{user.username}
 **Warns:** `{user.warns}`
 
+**Credits:** `{user.credits.value}`
 **Subscription:** `{user.subscription["name"].upper()}`
 """
     if user.subscription.get("name") != "free":
