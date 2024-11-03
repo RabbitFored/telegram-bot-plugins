@@ -37,3 +37,17 @@ async def ungift(client, message):
         return
 
     await user.end_subscription()
+
+
+
+@Client.on_message(filters.command(["end_subscription"]) & fltr.group("admin"))
+async def end_subscription(client, message):
+    userID, username = utils.get_target_user(message)
+    user = await db.get_user(userID, username, fetch_info=True)
+
+    if not user:
+        await message.reply_text("**No user found!**")
+        return
+
+    await user.end_subscription()
+    await message.reply(f"Subscription for user {user.ID}")

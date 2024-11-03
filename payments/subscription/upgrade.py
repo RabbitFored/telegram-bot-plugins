@@ -1,8 +1,8 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButtonBuy, InlineKeyboardMarkup, LabeledPrice
 
-from bot import logger, strings
-from bot.core import database as db
+from bot import logger, strings, CONFIG
+from bot.core import database as db, MongoDB
 from bot.core.utils import generate_keyboard
 
 
@@ -38,7 +38,11 @@ async def upgrade(client, message):
 
 @Client.on_message(filters.successful_payment)
 async def successful_payment(client, message):
+    if message.successful_payment.payload:
+       db = MongoDB(CONFIG.mongouri, db_name=message.successful_payment.payload)
     user = await db.get_user(message.from_user.id)
     await user.upgrade("premium", message.successful_payment.telegram_payment_charge_id)
     await message.reply("**Thank you for purchasing premium!**")
+    await message.reply("**Facing any issues?**\n\nContact @quantumbackdoor")
     logger.info(f"User {user.ID} upgraded to premium")
+    
